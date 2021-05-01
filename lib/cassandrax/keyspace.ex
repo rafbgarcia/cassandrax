@@ -107,6 +107,9 @@ defmodule Cassandrax.Keyspace do
       def one(queryable, opts \\ []),
         do: Cassandrax.Keyspace.Queryable.one(__MODULE__, queryable, opts)
 
+      def count(queryable, opts \\ []),
+        do: Cassandrax.Keyspace.Queryable.count(__MODULE__, queryable, opts)
+
       ## Run Plain CQL Statements
 
       def cql(statement, values \\ [], opts \\ []),
@@ -295,6 +298,21 @@ defmodule Cassandrax.Keyspace do
   """
   @callback one(queryable :: Cassandrax.Queryable.t(), opts :: Keyword.t()) ::
               Cassandrax.Schema.t() | nil
+
+  @doc """
+  Returns the number of rows.
+
+  Returns `nil` if no records were found. May raise Cassandrax.MultipleResultsError,
+  if query returns more than one entry.
+
+  ## Example
+  ```
+  query = count(User, id: 1)
+  MyKeyspace.count(query)
+  ```
+  """
+  @callback count(queryable :: Cassandrax.Queryable.t(), opts :: Keyword.t()) ::
+              integer()
 
   @doc """
   Runs plain CQL Statements.

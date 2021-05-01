@@ -48,6 +48,23 @@ defmodule Cassandrax.Keyspace.Queryable do
     end
   end
 
+  def count(keyspace, queryable, opts) do
+    conn = keyspace.__conn__
+    opts = keyspace.__default_options__(:read) |> Keyword.merge(opts)
+
+    queryable =
+      queryable
+      |> Cassandrax.Query.select("COUNT(*) as count")
+      |> Cassandrax.Queryable.to_query()
+
+    {statement, values} = Cassandrax.Connection.all(keyspace, queryable)
+
+    case Cassandrax.cql(conn, statement, values, opts) do
+      {:ok, results} -> Enum.at(results, 0) |> Map.get("count")
+      {:error, error} -> raise error
+    end
+  end
+
   defp query_for_get(_queryable, empty) when is_nil(empty) or empty == [] do
     raise ArgumentError, "cannot perform Cassandrax.Keyspace.get/2 with an empty primary key"
   end

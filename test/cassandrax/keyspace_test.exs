@@ -234,6 +234,29 @@ defmodule Cassandrax.KeyspaceTest do
     end
   end
 
+  describe "count" do
+    test "returns zero when table is empty" do
+      assert TestData |> TestKeyspace.count() == 0
+    end
+
+    test "returns number of rows" do
+      create_zero(nil)
+      create_one(nil)
+
+      assert TestData |> TestKeyspace.count() == 2
+    end
+
+    test "returns number of rows given a criteria" do
+      create_zero(nil)
+      [one: one] = create_one(nil)
+
+      assert TestData
+             |> where(id: one.id)
+             |> where(timestamp: one.timestamp)
+             |> TestKeyspace.count() == 1
+    end
+  end
+
   describe "batch operations" do
     setup [:create_zero, :create_one]
 

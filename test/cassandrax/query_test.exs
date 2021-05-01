@@ -24,6 +24,14 @@ defmodule Cassandrax.QueryTest do
       assert %Cassandrax.Query{from: "test_schemas"} = query
       assert %Cassandrax.Query{schema: TestSchema} = query
     end
+
+    test "accepts a raw select clause" do
+      query = select(TestSchema, "COUNT(*)")
+
+      assert %Cassandrax.Query{select: "COUNT(*)"} = query
+      assert %Cassandrax.Query{from: "test_schemas"} = query
+      assert %Cassandrax.Query{schema: TestSchema} = query
+    end
   end
 
   describe "where/2" do

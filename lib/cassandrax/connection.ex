@@ -26,6 +26,8 @@ defmodule Cassandrax.Connection do
     {statement, values}
   end
 
+  defp select(%{select: select}) when is_binary(select), do: ["SELECT #{select}"]
+
   defp select(%{select: [], distinct: []}), do: ["SELECT *"]
 
   defp select(%{select: fields, distinct: []}) when is_list(fields),
