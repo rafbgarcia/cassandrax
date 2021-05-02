@@ -74,13 +74,17 @@ defmodule Cassandrax.Keyspace.Queryable do
     %{allow_filtering: allow_filtering} = query
     schema = assert_schema!(query)
 
-    [partition_keys | clustering_keys] = schema.__schema__(:pk)
+    [partition_keys | [clustering_keys]] = schema.__schema__(:pk)
     {partition_filters, other_filters} = Keyword.split(primary_key, partition_keys)
 
     partition_filters = filters_for_partition(allow_filtering, partition_keys, partition_filters)
     other_filters = filters_for_others(allow_filtering, clustering_keys, other_filters)
     filters = Keyword.merge(partition_filters, other_filters)
-    Cassandrax.Query.where(query, ^filters)
+
+    filters
+    |> Enum.reduce(query, fn filter, query_acc ->
+      Cassandrax.Query.where(query_acc, ^Keyword.new([filter]))
+    end)
   end
 
   defp query_for_get(_queryable, value) do

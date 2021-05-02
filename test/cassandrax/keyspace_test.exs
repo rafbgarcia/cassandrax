@@ -205,6 +205,7 @@ defmodule Cassandrax.KeyspaceTest do
 
     test "get", %{zero: zero} do
       assert TestKeyspace.get(TestData, id: "0") == zero
+      assert TestKeyspace.get(TestData, id: "0", timestamp: "00:00") == zero
       assert TestKeyspace.get(TestData, id: "3") == nil
     end
 
